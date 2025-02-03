@@ -5,6 +5,8 @@ const cookieParser = require('cookie-parser'); //middleware to parse cookies
 const cors = require('cors'); //middleware to handle cross origin resource sharing to connect frontend backend 
 const authRoute = require('./routes/auth.js');
 
+const userRoute = require('./routes/users.js')
+const doctorRoute = require('./routes/doctors.js');
 
 
 const app = express();
@@ -19,6 +21,8 @@ app.use(cors({ origin: process.env.CLIENT_URL || 'http://localhost:3000', creden
 // Routes
 
 app.use('/api/v1/auth', authRoute); 
+app.use('/api/v1/users',userRoute);
+app.use('/api/v1/doctors',doctorRoute);
 
 // Database Connection
 mongoose.set('strictQuery', false); //Disables strict query filtering (to avoid deprecation warnings in MongoDB v7+).
