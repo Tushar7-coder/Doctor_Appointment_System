@@ -1,8 +1,10 @@
 const express = require("express");
 const {getAllUser,getSingleUser,deleteUser,updateUser} = require("../controller/userController.js");
 
+const authenticate = require('../auth/verifyToken.js');
+
 const router = express.Router();
-router.get('/:id',getSingleUser);
+router.get('/:id',authenticate,getSingleUser);
 router.get('/',getAllUser);
 router.put('/:id',updateUser);
 router.delete('/:id',deleteUser);
