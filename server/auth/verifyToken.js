@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const Doctor = require('../models/doctor.model');
 const User = require('../models/user.model');
-//const express = require('express');
+
 
 const authenticate = async (req, res, next) => {
     //console.log("JWT Secret Key:", process.env.JWT_SECRET_KEY);
@@ -40,17 +40,23 @@ const restrict = (roles) => async (req, res, next) => {
         if (!userId) {
             return res.status(401).json({ success: false, message: "Unauthorized: No user ID found" });
         }
+        let user;
+        const patient = await User.findById(userId);
+        const doctor = await Doctor.findById(userId);
 
-        // Fetch user from either Patient or Doctor collection
-        let user = await User.findById(userId) || await Doctor.findById(userId);
+        if(patient){
+            user = patient
+        }
+        if(doctor){
+            user =doctor
+        }
         
         if (!user) {
             return res.status(404).json({ success: false, message: "User not found" });
         }
-
-        // Check if user's role is authorized
-        if (!roles.includes(user.role)) {
-            return res.status(403).json({ success: false, message: "You are not authorized" });
+        if(!roles.includes(user.role)){
+            console.error("Authorization error:", error);
+            return res.status(401).json({success : false , message : 'You are not authorized'})
         }
 
         next(); // Move to next middleware
@@ -60,6 +66,8 @@ const restrict = (roles) => async (req, res, next) => {
         res.status(500).json({ success: false, message: "Internal server error" });
     }
 };
+
+
 
 
 
