@@ -20,7 +20,7 @@ const authenticate = async (req, res, next) => {
         const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
         //console.log("Decoded Token:", decoded); // Debugging log
 
-        req.userId = decoded.id;
+        req.userId = decoded.userId;//error
         req.role = decoded.role;
         
         next();
@@ -37,6 +37,7 @@ const authenticate = async (req, res, next) => {
 const restrict = (roles) => async (req, res, next) => {
     try {
         const userId = req.userId;
+        console.log(userId);
         if (!userId) {
             return res.status(401).json({ success: false, message: "Unauthorized: No user ID found" });
         }
@@ -59,15 +60,13 @@ const restrict = (roles) => async (req, res, next) => {
             return res.status(401).json({success : false , message : 'You are not authorized'})
         }
 
-        next(); // Move to next middleware
+        next();
 
     } catch (error) {
         console.error("Authorization error:", error);
         res.status(500).json({ success: false, message: "Internal server error" });
     }
 };
-
-
 
 
 

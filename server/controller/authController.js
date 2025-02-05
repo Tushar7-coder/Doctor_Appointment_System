@@ -9,7 +9,7 @@ exports.registerUser = async (req, res) => {
   try {
     let user = null;
 
-    // Check if the user already exists
+    // Check if user already exists
     if (role === 'patient') {
       user = await User.findOne({ email });
     } else if (role === 'doctor') {
@@ -50,13 +50,6 @@ exports.registerUser = async (req, res) => {
       });
     }
 
-    // Debugging step: Check if the user object is correctly created
-    console.log("Created user object:", user);
-
-    if (!user) {
-      return res.status(400).json({ message: "Error creating user object." });
-    }
-
     // Save the user to the database
     await user.save();
 
@@ -73,16 +66,17 @@ exports.registerUser = async (req, res) => {
     });
 
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, message: 'Internal server error, please try again', error: error.message });
+    console.error("Registration Error:", error);
+    res.status(500).json({ success: false, message: 'Internal server error, please try again' });
   }
 };
-
 
 exports.loginUser = async (req, res) => {
   const { email, password } = req.body;
 
   try {
+    console.log("Received Login Request for:", email);
+
     // Find the user by email
     let user = await User.findOne({ email });
     if (!user) {
@@ -90,32 +84,42 @@ exports.loginUser = async (req, res) => {
     }
 
     if (!user) {
+      console.log("User not found!");
       return res.status(400).json({ message: 'Invalid credentials' });
     }
+
+    console.log("User found:", user);
 
     // Compare the hashed password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
+      console.log("Password mismatch!");
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
     // Generate a JWT token
-    const token = jwt.sign({ userId: user._id, role: user.role }, process.env.JWT_SECRET_KEY, { expiresIn: '1d' });
+    const token = jwt.sign(
+      { userId: user._id, role: user.role }, 
+      process.env.JWT_SECRET_KEY, 
+      { expiresIn: '1d' }
+    );
 
-    // Send the response with the token
+    console.log("Generated Token:", token);
+
     res.status(200).json({
       success: true,
       message: 'Login successful',
       token,
-      user : {
-        name : user.name,
-        email : user.email,
-        role : user.role,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
       }
     });
-    
+
   } catch (error) {
-    console.error(error);
+    console.error("Login Error:", error);
     res.status(500).json({ success: false, message: 'Internal server error, please try again' });
   }
 };
