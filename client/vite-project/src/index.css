@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-
+/* 
 @layer base {
 	section{
 		@apply py-[75px]
@@ -39,4 +39,4 @@
 	.text_para {
 		@apply text-[16px] leading-7 mt-3
 	}
-}
+} */
