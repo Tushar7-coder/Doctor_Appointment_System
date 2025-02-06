@@ -1,0 +1,11 @@
+const express = require('express');
+const {getAllReviews,createReview} = require('../controller/reviewController');
+
+const {authenticate,restrict} = require('../auth/verifyToken');
+const { route } = require('./users');
+
+const router = express.Router({mergeParams: true});
+
+router.route('/').get(getAllReviews).post(authenticate,restrict(['patient']),createReview);
+
+module.exports = router;

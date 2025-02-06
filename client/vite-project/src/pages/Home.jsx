@@ -9,10 +9,15 @@ import icon3 from "../assets/images/icon03.png";
 import featureImg from "../assets/images/feature-img.png";
 import videoImg from "../assets/images/video-icon.png";
 import avatarIcon from "../assets/images/avatar-icon.png"
+import faqImg from '../assets/images/faq-img.png'
 import { Link } from "react-router-dom";
 import { FaArrowRight } from "react-icons/fa";
 import About from "../components/About/About";
 import ServiceList from "../components/Services/ServiceList";
+import DoctorList from "../components/Doctors/DoctorList";
+import FaqList from "../components/Faq/FaqList";
+import Testimonial from "../components/Testimonial/Testimonial";
+
 const Home = () => {
   return (
     <>
@@ -165,7 +170,7 @@ const Home = () => {
         <About />
       </section>
       <section>
-        <div className="container px-7 lg:px-8">
+        <div className="container px-7 lg:px-8 mt-12">
           <div className="xl:w-[470px] mx-auto">
             <h2 className="text-center font-bold text-3xl mt-4">
               Our medical service
@@ -227,6 +232,45 @@ const Home = () => {
               </div>
             </div>
           </div>
+        </div>
+      </section>
+      <section>
+        <div className="container mt-[200px]">
+          <div className="xl:w-[470px] mx-auto">
+            <h2 className="text-center font-bold text-2xl lg:text-4xl">
+              Our Great Doctors
+            </h2>
+            <p className="text-center mt-4">
+              World-class care for everyone. Our health System offers unmatched, expert health care.
+            </p>
+          </div>
+          <DoctorList/>
+        </div>
+      </section>
+      <section>
+        <div className="container mt-16 mx-auto px-7">
+          <div className="flex justify-between gap-[50px] lg:gap-0">
+            <div className="w-1/2 hidden md:block">
+              <img src={faqImg} alt="" />
+            </div>
+            <div className="w-full md:w-1/2">
+              <h2 className="heading text-center text-2xl lg:text-4xl">
+                Most questions by our beloved patients
+              </h2>
+              <FaqList/>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section>
+        <div className="container">
+          <div className="xl:w-[470px] mx-auto mt-[30px]">
+            <h2 className="text-center text-2xl lg:text-4xl">What out patient says</h2>
+            <p className="text-center text-black mt-4 ">
+              World-class care for everyone. Our health Sysyem offers unmatched, expert health care.
+            </p>
+          </div>
+          <Testimonial/>
         </div>
       </section>
     </>
