@@ -52,7 +52,7 @@ exports.deleteDoctor = async (req, res) => {
 exports.getSingleDoctor = async (req, res) => {
   const id = req.params.id;
   try {
-    const doctor = await Doctor.findById(id);
+    const doctor = await Doctor.findById(id).populate('reviews').select('-password');
 
     if (!doctor) {
       return res.status(404).json({ success: false, message: "Doctor not found" });
@@ -75,19 +75,19 @@ exports.getAllDoctor = async (req, res) => {
   try {
 
 	const {query} = req.query;
-	let doctor;
+	let doctors;
 	if(query){
 		doctors = await Doctor.find({isApproved : 'approved',
 			$or:[
-				{name : {$regex : query,$option : 'i'}},
-				{specialization : {$regex : query,$option : 'i'}}
+				{name : {$regex : query,$options : 'i'}},
+				{specialization : {$regex : query,$options : 'i'}}
 			]
 
-		}).select('')
+		}).select('-password')
 	}else{
-		 doctor = await Doctor.find({isApproved : 'approved'}).select('')
+		 doctors = await Doctor.find({isApproved : 'approved'}).select('')
 	}
-    const doctors = await Doctor.find({});
+    
 
     if (!doctors.length) {
       return res.status(404).json({ success: false, message: "No doctors found" });

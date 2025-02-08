@@ -75,7 +75,7 @@ exports.loginUser = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    console.log("Received Login Request for:", email);
+    //console.log("Received Login Request for:", email);
 
     // Find the user by email
     let user = await User.findOne({ email });
@@ -88,7 +88,7 @@ exports.loginUser = async (req, res) => {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
-    console.log("User found:", user);
+    //console.log("User found:", user);
 
     // Compare the hashed password
     const isMatch = await bcrypt.compare(password, user.password);
@@ -103,8 +103,8 @@ exports.loginUser = async (req, res) => {
       process.env.JWT_SECRET_KEY, 
       { expiresIn: '1d' }
     );
-
-    console.log("Generated Token:", token);
+    
+    //console.log("Generated Token:", token);
 
     res.status(200).json({
       success: true,

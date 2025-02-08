@@ -16,32 +16,37 @@ exports.getAllReviews = async (req, res) => {
 
 exports.createReview = async (req, res) => {
   try {
-    // Ensure doctor ID is provided
+    console.log("Incoming Request:", req.body);
+    console.log("Params Doctor ID:", req.params.doctorId);
+    
+    // Ensure doctor ID is taken from params if missing from body
+    req.body.doctor = req.body.doctor || req.params.doctorId;
+    req.body.user = req.userId; // Assign user ID from token
+
+    console.log("Doctor ID after Fix:", req.body.doctor);
+    console.log("User ID after Fix:", req.body.user);
+
     if (!req.body.doctor) {
-      req.body.doctor = req.params.doctorId;
+      return res.status(400).json({ success: false, message: "Doctor ID is required" });
     }
 
-    // Ensure user ID is provided from authentication middleware
-    if (!req.body.user) {
-      req.body.user = req.userId;
-    }
-
-    // Validate doctor exists
+    // Check if the doctor exists
     const doctorExists = await Doctor.findById(req.body.doctor);
     if (!doctorExists) {
       return res.status(404).json({ success: false, message: "Doctor not found" });
     }
 
-    // Create new review
+    // Create review
     const newReview = new Review(req.body);
     const savedReview = await newReview.save();
 
-    // Add review ID to the doctor's review list
+    // Add review to doctor's profile
     await Doctor.findByIdAndUpdate(req.body.doctor, {
       $push: { reviews: savedReview._id },
     });
 
     res.status(201).json({ success: true, message: "Review Submitted", data: savedReview });
+
   } catch (err) {
     console.error("Error creating review:", err);
     res.status(500).json({ success: false, message: err.message });

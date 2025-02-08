@@ -1,10 +1,11 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const dotenv = require('dotenv').config();
-const cookieParser = require('cookie-parser'); //middleware to parse cookies
-const cors = require('cors'); //middleware to handle cross origin resource sharing to connect frontend backend 
-const authRoute = require('./routes/auth.js');
+require('dotenv').config();
+const cookieParser = require('cookie-parser');
+const cors = require('cors'); 
 
+
+const authRoute = require('./routes/auth.js');
 const userRoute = require('./routes/users.js')
 const doctorRoute = require('./routes/doctors.js');
 const reviewRoute = require('./routes/review.js');
@@ -55,9 +56,7 @@ const startServer = async () => {
   });
 };
 
-// Graceful Shutdown (optional but recommended)
-//Listens for the SIGINT signal (sent when you stop the server using Ctrl + C).
-//Closes the MongoDB connection properly before exiting the app.
+
 
 
 process.on('SIGINT', () => {

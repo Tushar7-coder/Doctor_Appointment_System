@@ -1,6 +1,8 @@
 const express = require('express');
 const {getAllDoctor,getSingleDoctor,deleteDoctor,updateDoctor} = require('../controller/doctorController');
+
 const {authenticate,restrict} = require('../auth/verifyToken.js');
+
 const reviewRouter = require('./review.js');
 const router  = express.Router();
 
