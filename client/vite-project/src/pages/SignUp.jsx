@@ -41,7 +41,7 @@ const SignUp = () => {
     setPreviewURL(data.secure_url);
     setSelectedFile(data.secure_url);
   
-    // ✅ Make sure `photo` is updated in `formData`
+    
     setFormData((prevData) => ({
       ...prevData,
       photo: data.secure_url,
@@ -57,14 +57,14 @@ const SignUp = () => {
     e.preventDefault();
     setLoading(true);
   
-    // ✅ Ensure `photo` is not null before submitting
+    //Ensure `photo` is not null before submitting
     if (!formData.photo) {
       toast.error("Please wait for the image to upload.");
       setLoading(false);
       return;
     }
   
-    console.log("Final Form Data Before Submission:", formData); // ✅ Debug log
+    console.log("Final Form Data Before Submission:", formData); //  Debug log
   
     try {
       const res = await fetch(`${BASE_URL}/auth/register`, {
@@ -76,7 +76,7 @@ const SignUp = () => {
       });
   
       const data = await res.json();
-      console.log("Response Data:", data); // ✅ Log API response
+      console.log("Response Data:", data); //  Log API response
   
       if (!res.ok) {
         throw new Error(data.message || "Something went wrong");

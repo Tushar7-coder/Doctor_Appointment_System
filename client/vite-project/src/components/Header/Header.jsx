@@ -1,9 +1,12 @@
 import { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
-import { Menu, X } from "lucide-react"; // Icons for mobile menu
+import { Menu, X } from "lucide-react";
 import logo from "../../assets/images/logo.png";
 import userImg from "../../assets/images/avatar-icon.png";
-import backGroundimage from '../../assets/images/mask.png'
+import backGroundimage from "../../assets/images/mask.png";
+import { toast } from "react-toastify";
+import { useAuth } from "../../context/authContext"; // Use safe custom hook
+
 const navLinks = [
   { path: "/home", display: "Home" },
   { path: "/doctors", display: "Find a Doctor" },
@@ -13,14 +16,24 @@ const navLinks = [
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { user, role, token, dispatch } = useAuth(); // Use safe hook
+
+  const handleLogout = () => {
+    dispatch({ type: "LOGOUT" });
+    toast.success("Logged out successfully!");
+    setMenuOpen(false); // Close menu after logout
+  };
 
   return (
-    <header className="w-full bg-white shadow-md z-50" style={{
-      backgroundImage: `url(${backGroundimage})`,
-      backgroundSize: "cover",
-      backgroundRepeat: "no-repeat",
-      backgroundPosition: "center",
-    }}>
+    <header
+      className="w-full bg-white shadow-md z-50"
+      style={{
+        backgroundImage: backGroundimage ? `url(${backGroundimage})` : "none",
+        backgroundSize: "cover",
+        backgroundRepeat: "no-repeat",
+        backgroundPosition: "center",
+      }}
+    >
       <div className="container mx-auto px-5 py-4 flex justify-between items-center">
         {/* Logo */}
         <Link to="/">
@@ -44,23 +57,35 @@ const Header = () => {
           ))}
         </nav>
 
-        {/* User Profile & Login */}
+        {/* User Profile & Login/Logout */}
         <div className="hidden md:flex items-center space-x-4">
-          <Link to="/">
-            <img src={userImg} alt="User" className="w-9 h-9 rounded-full" />
-          </Link>
-          <Link to="/login">
-            <button className="bg-blue-500 text-white font-semibold px-5 py-2 rounded-lg hover:bg-blue-600 transition">
-              Login
+          {token && (
+            <>
+              <Link to={role === "doctor" ? "/doctors/profile/me" : "/users/profile/me"}>
+                <img src={user?.photo || userImg} alt="User" className="w-9 h-9 rounded-full" />
+              </Link>
+              <h1 className="text-gray-800 font-medium">{user?.name}</h1>
+            </>
+          )}
+
+          {token ? (
+            <button
+              onClick={handleLogout}
+              className="bg-red-500 text-white px-5 py-2 rounded-lg hover:bg-red-600"
+            >
+              Logout
             </button>
-          </Link>
+          ) : (
+            <Link to="/login">
+              <button className="bg-blue-500 text-white px-5 py-2 rounded-lg hover:bg-blue-600">
+                Login
+              </button>
+            </Link>
+          )}
         </div>
 
         {/* Mobile Menu Button */}
-        <button
-          className="md:hidden block text-gray-800"
-          onClick={() => setMenuOpen(!menuOpen)}
-        >
+        <button className="md:hidden block text-gray-800" onClick={() => setMenuOpen(!menuOpen)}>
           {menuOpen ? <X size={28} /> : <Menu size={28} />}
         </button>
       </div>
@@ -74,9 +99,7 @@ const Header = () => {
                 key={index}
                 to={link.path}
                 className={({ isActive }) =>
-                  isActive
-                    ? "text-blue-500 font-semibold"
-                    : "text-gray-800 font-medium hover:text-blue-500"
+                  isActive ? "text-blue-500 font-semibold" : "text-gray-800 font-medium hover:text-blue-500"
                 }
                 onClick={() => setMenuOpen(false)}
               >
@@ -85,14 +108,28 @@ const Header = () => {
             ))}
           </nav>
           <div className="flex flex-col items-center py-4">
-            <Link to="/">
-              <img src={userImg} alt="User" className="w-9 h-9 rounded-full mb-3" />
-            </Link>
-            <Link to="/login">
-              <button className="bg-blue-500 text-white font-semibold px-5 py-2 rounded-lg hover:bg-blue-600 transition"  onClick={() => setMenuOpen(false)}>
-                Login
+            {token && (
+              <Link to={role === "doctor" ? "/doctors/profile/me" : "/users/profile/me"}>
+                <img src={user?.photo || userImg} alt="User" className="w-9 h-9 rounded-full mb-3" />
+              </Link>
+            )}
+            {token ? (
+              <button
+                className="bg-red-500 text-white font-semibold px-5 py-2 rounded-lg hover:bg-red-600 transition"
+                onClick={handleLogout}
+              >
+                Logout
               </button>
-            </Link>
+            ) : (
+              <Link to="/login">
+                <button
+                  className="bg-blue-500 text-white font-semibold px-5 py-2 rounded-lg hover:bg-blue-600 transition"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  Login
+                </button>
+              </Link>
+            )}
           </div>
         </div>
       )}
