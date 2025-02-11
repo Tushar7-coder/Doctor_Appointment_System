@@ -18,7 +18,7 @@ app.use(express.json()); //parse incommimg json requests
 
 app.use(cookieParser()); //parse cookies in incoming HTTP requests 
 
-app.use(cors({ origin: process.env.CLIENT_URL || 'http://localhost:3000', credentials: true })); // CORS configuration with credentials like cokies and authentication 
+app.use(cors({ origin: [process.env.CLIENT_URL || 'http://localhost:3000', "http://localhost:5173"], credentials: true })); // CORS configuration with credentials like cokies and authentication 
 // Routes
 
 app.use('/api/v1/auth', authRoute); 
