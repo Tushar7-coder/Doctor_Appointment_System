@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useReducer } from "react";
+import { createContext, useContext, useEffect, useReducer, useState } from "react";
 
 export const AuthContext = createContext();
 
@@ -28,6 +28,8 @@ export const AuthContextProvider = ({ children }) => {
     token: null,
   });
 
+  const [loading, setLoading] = useState(true); // ✅ Add loading state
+
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     const storedRole = localStorage.getItem("role");
@@ -43,6 +45,8 @@ export const AuthContextProvider = ({ children }) => {
         payload: { user: parsedUser, role: storedRole, token: storedToken },
       });
     }
+
+    setLoading(false); // ✅ Ensure loading state is updated
   }, []);
 
   useEffect(() => {
@@ -56,6 +60,10 @@ export const AuthContextProvider = ({ children }) => {
       localStorage.removeItem("token");
     }
   }, [state.user, state.role, state.token]);
+
+  if (loading) {
+    return <div>Loading...</div>; // ✅ Prevent rendering before auth check completes
+  }
 
   return (
     <AuthContext.Provider value={{ ...state, dispatch }}>

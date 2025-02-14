@@ -1,7 +1,7 @@
 import React from "react";
 import userImg from "../../assets/images/doctor-img01.png";
 import { useContext, useState } from "react";
-import { AuthContext } from "../../context/AuthContext";
+import { AuthContext } from "../../context/authContext";
 import MyBookings from "./MyBookings";
 import Profile from "./Profile";
 
@@ -44,7 +44,7 @@ const MyAccount = () => {
                 {userData.name}
               </h3>
               <p className="text-[18px] leading-[30px] text-black font-bold">
-                tushar@gmil.com
+                {userData.email}
               </p>
               <p className="text-balance text-[15px] leading-6 font-medium">
                 Blood Type:{" "}
