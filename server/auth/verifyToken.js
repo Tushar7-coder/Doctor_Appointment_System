@@ -3,37 +3,40 @@ const Doctor = require('../models/doctor.model');
 const User = require('../models/user.model');
 
 const authenticate = async (req, res, next) => {
-    const authToken = req.headers.authorization;
+    let authToken = req.headers.authorization;
 
-    if (!authToken || !authToken.startsWith('Bearer ')) {
-        console.log("No token found or incorrect format"); // 🔍 Debug
-        return res.status(401).json({ success: false, message: "No token, authorization denied" });
+    if (!authToken) {
+        console.log("No token found in request headers");
+        return res.status(401).json({ success: false, message: "Authorization token is required" });
+    }
+
+    if (!authToken.startsWith('Bearer ')) {
+        console.log("Invalid token format");
+        return res.status(401).json({ success: false, message: "Invalid token format" });
     }
 
     try {
         const token = authToken.split(' ')[1];
-        console.log("Received Token:", token); // 🔍 Debug
+        console.log("Received Token:", token);
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-        console.log("Decoded Token:", decoded); // 🔍 Debug
+        console.log("Decoded Token:", decoded);
 
-        if (!decoded.userId) {  // ✅ Make sure we're using 'userId'
-            console.log("Token missing userId"); // 🔍 Debug
+        if (!decoded.userId) {
+            console.log("Token missing userId");
             return res.status(401).json({ success: false, message: "Invalid token structure" });
         }
 
-        req.userId = decoded.userId; // ✅ Fixing 'userId'
+        req.userId = decoded.userId;
         req.role = decoded.role;
 
         next();
     } catch (error) {
-        if (error.name === "TokenExpiredError") {
-            return res.status(401).json({ message: "Token is expired" });
-        }
         console.error("JWT Authentication Error:", error.message);
-        return res.status(401).json({ success: false, message: "Invalid token" });
+        return res.status(401).json({ success: false, message: "Invalid or expired token" });
     }
 };
+
 
 
 

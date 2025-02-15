@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { BASE_URL } from '../config';
 import { toast } from "react-toastify";
-import { useAuth } from '../context/authContext'; // Use safe custom hook
+import { useAuth } from '../context/AuthContext'; // Use safe custom hook
 
 const Login = () => {
   const [formData, setFormData] = useState({

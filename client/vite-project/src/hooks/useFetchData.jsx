@@ -1,36 +1,46 @@
-import React from 'react'
-import { useState , useEffect} from 'react'
-import { token } from '../config';
+import { useState, useEffect } from "react";
+
 const useFetchData = (url) => {
-	const [data,setData] = useState([]);
-	const [loading, setLoading] = useState(false);
-	const [error, setError] = useState(null);
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-	useEffect(() =>{
-		const fetchData = async () => {
-			setLoading(true);
-			try{
-				const res = await fetch(url, {
-					headers: {
-						'Authorization': `Bearer ${token}`,	
-					},
-				});
-				const result = await res.json();
-				if(!res.ok){
-					throw new Error(result.message);
-				}
-				setData(result.data);
-				setLoading(false);
-			}catch(err){
-				setLoading(false)
-				setError(err.message);
-			}
-		}
-		fetchData()
-	},[url])
-  return {data,loading,error}
-	
-  
-}
+  useEffect(() => {
+    const controller = new AbortController(); // To cancel fetch on unmount
+    const fetchData = async () => {
+      setLoading(true);
+      setError(null);
 
-export default useFetchData
+      try {
+        const token = localStorage.getItem("token"); // Get token dynamically
+        const res = await fetch(url, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          signal: controller.signal, // Attach abort signal
+        });
+
+        if (!res.ok) {
+          throw new Error(`Error: ${res.status} ${res.statusText}`);
+        }
+
+        const result = await res.json();
+        setData(result.data);
+      } catch (err) {
+        if (err.name !== "AbortError") {
+          setError(err.message);
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+
+    return () => controller.abort(); // Cleanup: cancel request on unmount
+  }, [url]); // Add `token` to dependency if it changes dynamically
+
+  return { data, loading, error };
+};
+
+export default useFetchData;
