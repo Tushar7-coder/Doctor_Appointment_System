@@ -101,7 +101,7 @@ exports.loginUser = async (req, res) => {
     const token = jwt.sign(
       { userId: user._id.toString(), role: user.role }, 
       process.env.JWT_SECRET_KEY, 
-      { expiresIn: '1d' }
+      { expiresIn: '30d' }
     );
     
     //console.log("Generated Token:", token);
