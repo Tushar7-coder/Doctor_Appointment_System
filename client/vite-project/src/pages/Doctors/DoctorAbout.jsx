@@ -1,6 +1,6 @@
 import React from 'react'
 import  formatData  from '../../utils/FormatDate'
-const DoctorAbout = () => {
+const DoctorAbout = ({name,about,qualification,experience}) => {
   return (
 	<>
 		<div>

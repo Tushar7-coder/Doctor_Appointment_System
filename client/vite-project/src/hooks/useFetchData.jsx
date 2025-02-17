@@ -12,7 +12,12 @@ const useFetchData = (url) => {
       setError(null);
 
       try {
-        const token = localStorage.getItem("token"); // Get token dynamically
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+          throw new Error("No token found. Please log in.");
+        }
+
         const res = await fetch(url, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -21,7 +26,8 @@ const useFetchData = (url) => {
         });
 
         if (!res.ok) {
-          throw new Error(`Error: ${res.status} ${res.statusText}`);
+          const errorData = await res.json();
+          throw new Error(errorData?.message || `Error: ${res.status} ${res.statusText}`);
         }
 
         const result = await res.json();
@@ -38,7 +44,7 @@ const useFetchData = (url) => {
     fetchData();
 
     return () => controller.abort(); // Cleanup: cancel request on unmount
-  }, [url]); // Add `token` to dependency if it changes dynamically
+  }, [url, localStorage.getItem("token")]); // 🔥 Added token dependency
 
   return { data, loading, error };
 };
