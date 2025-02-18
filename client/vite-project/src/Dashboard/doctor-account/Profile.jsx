@@ -1,7 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AiOutlineDelete } from "react-icons/ai";
+import uploadImageToCloudinary from "../../utils/uploadCloudinary";
+import {BASE_URL , token} from "../../config";
+import {toast} from "react-toastify";
 
-const Profile = () => {
+
+
+
+const Profile = ({doctorData}) => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -12,19 +18,60 @@ const Profile = () => {
     ticketPrice: 0,
     qualification: [],
     experience: [],
-    timeslot: [{ day: "", startingTime: "", endingTime: "" }],
+    timeslot: [],
     about: "",
     photo: null,
   });
+  useEffect(() => {
+    setFormData({
+      name: doctorData?.name || "",
+      email: doctorData?.email || "",
+      phone: doctorData?.phone || "",
+      bio: doctorData?.bio || "",
+      gender: doctorData?.gender || "",
+      specialization: doctorData?.specialization || "",
+      ticketPrice: doctorData?.ticketPrice || 0,
+      qualification: doctorData?.qualification || [],
+      experience: doctorData?.experience || [],
+      timeslot: doctorData?.timeslot || [],
+      about: doctorData?.about || "",
+      photo: doctorData?.photo || null,
+    });
+  }, [doctorData]);
+  
+
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-  const handleFileInputChange = async (e) => {};
+  const handleFileInputChange = async (e) => {
+    const file = e.target.files[0];
+    const data = await uploadImageToCloudinary(file)
+    console.log(data)
+    setFormData({ ...formData, photo: data.url });
+  };
   const updateProfileHandler = async (e) => {
     e.preventDefault();
-    console.log(formData);
-  };
+    //console.log(formData);
+    try{
+      const res = await fetch(`${BASE_URL}/doctors/${doctorData._id }`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization : `Bearer ${token}`
+        },
+        body: JSON.stringify(formData),
+      })
+        const result = await res.json()
+      if(!res.ok){
+        throw new Error(result.message || "Something went wrong")
+      }
 
+      toast.success(result.message)
+    }catch(error){
+      toast.error(error.message)
+      //console.log(error)
+  };
+  }
   const addItem = (key, item) => {
     setFormData((prevFormData) => ({
       ...prevFormData,
@@ -85,6 +132,23 @@ const Profile = () => {
     deleteItem("experience", index);
   };
 
+  const addTimeSlot = (e) => {
+    e.preventDefault(); // Prevents form submission
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      timeslot: [
+        ...prevFormData.timeslot,
+        { day: "Sunday", startingTime: "10:00", endingTime: "04:30" },
+      ],
+    }));
+  };
+  const handleTimeSlotChange = (event, index) => {
+    handleQualificationChangeFunc("timeslot", index, event);
+  };
+  const deleteTimeSlot = (e, index) => {
+    e.preventDefault();
+    deleteItem("timeslot", index);
+  };
   return (
     <div>
       <h2 className="text-black font-bold text-[24px] leading-9 mb-10">
@@ -321,7 +385,7 @@ const Profile = () => {
                       id=""
                       value={item.day}
                       className="px-2 py-3.5 w-full"
-                      onChange={handleInputChange}
+                      onChange={(e) => handleTimeSlotChange(e, index)}
                     >
                       <option value="">Select</option>
                       <option value="saturday">Saturday</option>
@@ -340,13 +404,7 @@ const Profile = () => {
                       value={item.startingTime}
                       className="px-2 py-3.5 border w-full"
                       name="startingTime"
-                      onChange={(e) =>
-                        handleQualificationChange(
-                          index,
-                          "endingTime",
-                          e.target.value
-                        )
-                      }
+                      onChange={e => handleTimeSlotChange(e, index)}
                     />
                   </div>
                   <div>
@@ -356,16 +414,10 @@ const Profile = () => {
                       value={item.endingTime}
                       className="px-2 py-3.5 border w-full"
                       name="endingTime"
-                      onChange={(e) =>
-                        handleQualificationChange(
-                          index,
-                          "endingTime",
-                          e.target.value
-                        )
-                      }
+                      onChange={e => handleTimeSlotChange(e, index)}
                     />
                   </div>
-                  <div className="flex items-center">
+                  <div onClick={(e) => deleteTimeSlot(e, index)}  className="flex items-center">
                     <button className="bg-red-600 p-2 rounded-full text-white text-[18px] mt-6 cursor-pointer">
                       <AiOutlineDelete />
                     </button>
@@ -374,7 +426,7 @@ const Profile = () => {
               </div>
             </div>
           ))}
-          <button className="bg-[#000] py-2 px-5 rounded text-white h-fit cursor-pointer">
+          <button onClick={addTimeSlot}  className="bg-[#000] py-2 px-5 rounded text-white h-fit cursor-pointer">
             Add TimeSlot
           </button>
         </div>
