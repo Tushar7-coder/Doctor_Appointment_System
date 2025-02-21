@@ -2,7 +2,13 @@ import React from 'react'
 import {doctors} from "../../assets/data/doctor"
 import DoctorCard from "../../components/Doctors/DoctorCard"
 import Testimonial from '../../components/Testimonial/Testimonial'
+import { BASE_URL } from '../../config'
+import useFetchData from '../../hooks/useFetchData'
+import Loader from "../../components/Loader/Loading"
+import Error from '../../components/Error/Error'
+
 const Doctors = () => {
+  const {data : doctors, loading, error} = useFetchData(`${BASE_URL}/doctors`)
   return (
 	<>
     <section className=''>
@@ -15,11 +21,13 @@ const Doctors = () => {
     </div>
   </section>
   <section>
-  <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'>
+  {loading && <Loader/>}
+	{error && <Error/>}
+  {!loading && !error && <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'>
 			{
-				doctors.map((doctor) =><DoctorCard key={doctor.id} doctor = {doctor}/>)
+				doctors.map((doctor,index) =><DoctorCard key={doctor._id || index} doctor = {doctor}/>)
 			}
-		</div>
+		</div>}
   </section>
   <section>
         <div className="container">

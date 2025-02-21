@@ -7,7 +7,7 @@ import starIcon from "../../assets/images/Star.png";
 import Tab from "./Tab";
 import DoctorAbout from "../../pages/Doctors/DoctorAbout.jsx";
 import Profile from "./Profile.jsx";
-
+import Appointments from "./Appointments.jsx";
 const Dashboard = () => {
   const { loading, error, data } = useFetchData(
     `${BASE_URL}/doctors/profile/me`
@@ -89,7 +89,7 @@ const Dashboard = () => {
                     />
                   </div>
                 )}
-                {tab === "appointments" && <div>appointments</div>}
+                {tab === "appointments" && <Appointments appointments={data.appointments}/>}
                 {tab === "settings" && (
                   <div>
                     <Profile doctorData={data} />
